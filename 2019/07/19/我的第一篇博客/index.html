@@ -1374,7 +1374,7 @@
           repo: 'Y-Mister.github.io',
           owner: 'Y-Mister',
           admin: ['Y-Mister'],
-          id: location.pathname,
+          id: md5(location.pathname),
           labels: 'gitalk'.split(',').filter(l => l),
           perPage: 10,
           pagerDirection: 'last',
