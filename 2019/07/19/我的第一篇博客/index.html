@@ -42,11 +42,10 @@
 <meta property="og:image" content="c:%5CUsers%5Clenovo%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5C1563354815806.png">
 <meta property="og:image" content="c:%5CUsers%5Clenovo%5CDesktop%5C%E8%AF%BE%E7%A8%8B%E7%AC%94%E8%AE%B0%5C1563354929276.png">
 <meta property="og:image" content="c:%5CUsers%5Clenovo%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5C1563363708529.png">
-<meta property="og:image" content="c:%5CUsers%5Clenovo%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5C1563366897921.png">
 <meta property="og:image" content="c:%5CUsers%5Clenovo%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5C1563370829516.png">
 <meta property="og:image" content="c:%5CUsers%5Clenovo%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5C1563371912292.png">
 <meta property="og:image" content="c:%5CUsers%5Clenovo%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5C1563372458864.png">
-<meta property="og:updated_time" content="2019-07-20T01:38:28.455Z">
+<meta property="og:updated_time" content="2019-07-20T01:45:47.100Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="我的第一篇博客">
 <meta name="twitter:description" content="Java基础Constant常量 不可更改的量称之为常量，例如数字“1,2,3”等均为常量，字符串“adfad”也是常量 final修饰称之为符号常量 常量命名：大写字母+下划线  数据类型 分类，数字为所占字节    整型：    浮点型：不精确   对精度有要求，可以使用math包下的BigInteger和BigDecimal进行任意精度的运算 注意：不要使用浮点数进行比较   字符型变量">
@@ -634,7 +633,7 @@
 <h3 id="常用类"><a href="#常用类" class="headerlink" title="常用类"></a>常用类</h3><ol>
 <li><p>包装类</p>
 <blockquote>
-<p><img src="C:%5CUsers%5Clenovo%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5C1563366897921.png" alt="1563366897921"></p>
+<p><a href="C:\Users\lenovo\AppData\Roaming\Typora\typora-user-images\1563366897921.png" target="_blank" rel="noopener">1563366897921</a></p>
 <p>除了Character和Boolean包装类都是Number抽象类的子类；</p>
 <p>常用方法：</p>
 <p>基本类型转化为包装类：new Integer(3)/Integer.valueOf(3);</p>
@@ -654,7 +653,7 @@
 </li>
 <li><p>包装类的缓存问题：</p>
 <blockquote>
-<p>  整型、char类型所对应的包装类，在自动装箱时，对于-128~127之间的值会进行缓存处理，其目的是提高效率。</p>
+<p>整型、char类型所对应的包装类，在自动装箱时，对于-128~127之间的值会进行缓存处理，其目的是提高效率。</p>
 <p>即包装类在初始化时，通过静态块将一定范围内的值自动封装成包装类对象缓存数组放入堆中，调用valueOf的时候首先从缓存数组中检查，如果在缓存数组中可以直接引用而提高效率</p>
 <p>测试代码：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&gt; <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test3</span> </span>&#123;</span><br><span class="line">&gt;     <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">&gt;         Integer in1 = -<span class="number">128</span>;</span><br><span class="line">&gt;         Integer in2 = -<span class="number">128</span>;</span><br><span class="line">&gt;         System.out.println(in1 == in2);<span class="comment">//true 因为123在缓存范围内</span></span><br><span class="line">&gt;         System.out.println(in1.equals(in2));<span class="comment">//true</span></span><br><span class="line">&gt;         Integer in3 = <span class="number">1234</span>;</span><br><span class="line">&gt;         Integer in4 = <span class="number">1234</span>;</span><br><span class="line">&gt;         System.out.println(in3 == in4);<span class="comment">//false 因为1234不在缓存范围内</span></span><br><span class="line">&gt;         System.out.println(in3.equals(in4));<span class="comment">//true</span></span><br><span class="line">&gt;     &#125;</span><br><span class="line">&gt; &#125;</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
@@ -664,7 +663,7 @@
 <h3 id="String类源码相关内容"><a href="#String类源码相关内容" class="headerlink" title="String类源码相关内容"></a>String类源码相关内容</h3><ol>
 <li><p>定义</p>
 <blockquote>
-<p> String 类对象代表不可变的Unicode字符序列，因此我们可以将String对象称为“不可变对象”。 那什么叫做“不可变对象”呢?指的是对象内部的成员变量的值无法再改变。我们打开String类的源码；</p>
+<p>String 类对象代表不可变的Unicode字符序列，因此我们可以将String对象称为“不可变对象”。 那什么叫做“不可变对象”呢?指的是对象内部的成员变量的值无法再改变。我们打开String类的源码；</p>
 <p>其核心是private final char value[];只能在初始化时赋值一起，无法再更改；</p>
 <p>字符串比较值用equals方法，==比较的是引用是否相同</p>
 </blockquote>
@@ -758,7 +757,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="https://MarsMan.github.io/2019/07/19/我的第一篇博客/" data-id="cjyav765d0001vcv9o6n226gx" class="article-share-link">Share</a>
+      <a data-url="https://MarsMan.github.io/2019/07/19/我的第一篇博客/" data-id="cjyavf4bg0001pgv9nedhps7x" class="article-share-link">Share</a>
       
       
     </footer>
