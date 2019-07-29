@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="-Java -基础,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="CommonsIO的相关使用   该工具类API众多，具体使用可在实际中自己根据需要选择  针对文件进行的相关操作 12345678910111213141516171819202122232425262728293031323334353637public static void main(String[] args) &amp;#123;        //文件大小        long len =">
+<meta name="keywords" content="-Java -基础">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CommonsIO基本操作">
+<meta property="og:url" content="https://MarsMan.github.io/2019/07/29/CommonsIO基本操作/index.html">
+<meta property="og:site_name" content="YuanHang&#39;blog">
+<meta property="og:description" content="CommonsIO的相关使用   该工具类API众多，具体使用可在实际中自己根据需要选择  针对文件进行的相关操作 12345678910111213141516171819202122232425262728293031323334353637public static void main(String[] args) &amp;#123;        //文件大小        long len =">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-07-29T10:55:12.055Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CommonsIO基本操作">
+<meta name="twitter:description" content="CommonsIO的相关使用   该工具类API众多，具体使用可在实际中自己根据需要选择  针对文件进行的相关操作 12345678910111213141516171819202122232425262728293031323334353637public static void main(String[] args) &amp;#123;        //文件大小        long len =">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://MarsMan.github.io/2019/07/29/CommonsIO基本操作/">
+
+
+
+
+
+  <title>CommonsIO基本操作 | YuanHang'blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">YuanHang'blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">袁航的个人博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://MarsMan.github.io/2019/07/29/CommonsIO基本操作/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Mars Man">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/MyAvatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="YuanHang'blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">CommonsIO基本操作</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-29T18:53:47+08:00">
+                2019-07-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CommonsIO/" itemprop="url" rel="index">
+                    <span itemprop="name">CommonsIO</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="CommonsIO的相关使用"><a href="#CommonsIO的相关使用" class="headerlink" title="CommonsIO的相关使用"></a>CommonsIO的相关使用</h3><p>   该工具类API众多，具体使用可在实际中自己根据需要选择</p>
+<ol>
+<li><p>针对文件进行的相关操作</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//文件大小</span></span><br><span class="line">        <span class="keyword">long</span> len = FileUtils.sizeOf(<span class="keyword">new</span> File(<span class="string">"zzf.jpg"</span>));</span><br><span class="line">        <span class="comment">//目录大小</span></span><br><span class="line">        <span class="keyword">long</span> len2 = FileUtils.sizeOf(<span class="keyword">new</span> File(<span class="string">"F:/JetBrains project/javaBaseTest"</span>));</span><br><span class="line">        System.out.println(len+<span class="string">" "</span>+len2);</span><br><span class="line">        <span class="comment">//子孙集,共三个参数，目录，文件过滤器，目录过滤器,其返回值是一个文件集合Collection</span></span><br><span class="line">        <span class="comment">//事例1：</span></span><br><span class="line">        Collection&lt;File&gt; files = FileUtils.listFiles(<span class="keyword">new</span> File(<span class="string">"F:/JetBrains project/javaBaseTest"</span>), EmptyFileFilter.NOT_EMPTY, <span class="keyword">null</span>);<span class="comment">//列出目录下所有非空文件，只列出第一层</span></span><br><span class="line">        <span class="keyword">for</span> (File file:files)&#123;</span><br><span class="line">            System.out.println(file.getAbsolutePath());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//事例2：</span></span><br><span class="line">        Collection&lt;File&gt; files2 = FileUtils.listFiles(<span class="keyword">new</span> File(<span class="string">"F:/JetBrains project/javaBaseTest"</span>), EmptyFileFilter.NOT_EMPTY, DirectoryFileFilter.INSTANCE);<span class="comment">//列出目录下所有非空文件，列出所有子孙集</span></span><br><span class="line">        <span class="keyword">for</span> (File file:files2)&#123;</span><br><span class="line">            System.out.println(file.getAbsolutePath());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//事例3：</span></span><br><span class="line">        Collection&lt;File&gt; files3 = FileUtils.listFiles(<span class="keyword">new</span> File(<span class="string">"F:/JetBrains project/javaBaseTest"</span>), <span class="keyword">new</span> SuffixFileFilter(<span class="string">"java"</span>), DirectoryFileFilter.INSTANCE);<span class="comment">//列出目录下所有.java文件</span></span><br><span class="line">        <span class="keyword">for</span> (File file:files3)&#123;</span><br><span class="line">            System.out.println(file.getAbsolutePath());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//事例4：文件过滤器的or方法使用</span></span><br><span class="line">        Collection&lt;File&gt; files4 = FileUtils.listFiles(<span class="keyword">new</span> File(<span class="string">"F:/JetBrains project/javaBaseTest"</span>), FileFilterUtils.or(<span class="keyword">new</span> SuffixFileFilter(<span class="string">"java"</span>),<span class="keyword">new</span> SuffixFileFilter(<span class="string">"class"</span>)), DirectoryFileFilter.INSTANCE);<span class="comment">//列出目录下.java与.class文件，</span></span><br><span class="line">        <span class="keyword">for</span> (File file:files4)&#123;</span><br><span class="line">            System.out.println(file.getAbsolutePath());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//事例5：文件过滤器的and方法使用</span></span><br><span class="line">        Collection&lt;File&gt; files5 = FileUtils.listFiles(<span class="keyword">new</span> File(<span class="string">"F:/JetBrains project/javaBaseTest"</span>), FileFilterUtils.and(<span class="keyword">new</span> SuffixFileFilter(<span class="string">"java"</span>), EmptyFileFilter.NOT_EMPTY), DirectoryFileFilter.INSTANCE);<span class="comment">//列出目录下.java且不为空的文件</span></span><br><span class="line">        <span class="keyword">for</span> (File file:files5)&#123;</span><br><span class="line">            System.out.println(file.getAbsolutePath());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+<ol start="2">
+<li><p>文件的读取</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        <span class="comment">//读取文件</span></span><br><span class="line">        String msg = FileUtils.readFileToString(<span class="keyword">new</span> File(<span class="string">"copy.txt"</span>),<span class="string">"utf-8"</span>);</span><br><span class="line">        System.out.println(msg);</span><br><span class="line">        System.out.println(<span class="string">"======================================"</span>);</span><br><span class="line">        <span class="keyword">byte</span>[] datas = FileUtils.readFileToByteArray(<span class="keyword">new</span> File(<span class="string">"copy.txt"</span>));</span><br><span class="line">        System.out.println(datas.length);</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">"======================================"</span>);</span><br><span class="line">        <span class="comment">//逐行读取</span></span><br><span class="line">        List&lt;String&gt; msg2 = FileUtils.readLines(<span class="keyword">new</span> File(<span class="string">"copy.txt"</span>), <span class="string">"utf-8"</span>);</span><br><span class="line">        <span class="keyword">for</span> (String str:msg2)&#123;</span><br><span class="line">            System.out.println(str);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(<span class="string">"======================================"</span>);</span><br><span class="line">        <span class="comment">//逐行读取，迭代器方法LineIterator</span></span><br><span class="line">        LineIterator lineIterator = FileUtils.lineIterator(<span class="keyword">new</span> File(<span class="string">"copy.txt"</span>), <span class="string">"utf-8"</span>);</span><br><span class="line">        <span class="keyword">while</span> (lineIterator.hasNext())&#123;</span><br><span class="line">            System.out.println(lineIterator.next());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+<ol start="3">
+<li><p>写入到文件中</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        <span class="comment">//写出文件,在字符串下，两函数功能相同</span></span><br><span class="line">        FileUtils.write(<span class="keyword">new</span> File(<span class="string">"commonsIOtest.txt"</span>),<span class="string">"学习真的很不容易"</span>,<span class="string">"utf-8"</span>,<span class="keyword">false</span>);</span><br><span class="line">        FileUtils.writeStringToFile(<span class="keyword">new</span> File(<span class="string">"commonsIOtest.txt"</span>),<span class="string">"我很迷茫"</span>,<span class="string">"utf-8"</span>,<span class="keyword">true</span>);<span class="comment">//最后的布尔型变量表示是否追加</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">//写入到文件，字节数组方式</span></span><br><span class="line">        FileUtils.writeByteArrayToFile(<span class="keyword">new</span> File(<span class="string">"commonsIOtest.txt"</span>),<span class="string">"我该怎么面对他们"</span>.getBytes(<span class="string">"utf-8"</span>),<span class="keyword">true</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//写出列表,第三个参数代表分割符</span></span><br><span class="line">        List&lt;String&gt; list = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">        list.add(<span class="string">"马云"</span>);</span><br><span class="line">        list.add(<span class="string">"马化腾"</span>);</span><br><span class="line">        list.add(<span class="string">"弼马温"</span>);</span><br><span class="line">        FileUtils.writeLines(<span class="keyword">new</span> File(<span class="string">"commonsIOtest.txt"</span>),list,<span class="string">"--"</span>,<span class="keyword">true</span>);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+<ol start="4">
+<li><p>文件的拷贝</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        <span class="comment">//文件的复制</span></span><br><span class="line">        FileUtils.copyFile(<span class="keyword">new</span> File(<span class="string">"zzf.jpg"</span>),<span class="keyword">new</span> File(<span class="string">"zzf5.jpg"</span>));</span><br><span class="line">        <span class="comment">//复制文件到目录</span></span><br><span class="line">        FileUtils.copyFileToDirectory(<span class="keyword">new</span> File(<span class="string">"zzf.jpg"</span>),<span class="keyword">new</span> File(<span class="string">"dest"</span>));</span><br><span class="line"></span><br><span class="line">        <span class="comment">//复制目录,将dest目录下的内容复制到dest2中</span></span><br><span class="line">        FileUtils.copyDirectory(<span class="keyword">new</span> File(<span class="string">"dest"</span>),<span class="keyword">new</span> File(<span class="string">"dest2"</span>));</span><br><span class="line">        <span class="comment">//复制目录到目录,将dest作为dest3的子目录</span></span><br><span class="line">        FileUtils.copyDirectoryToDirectory(<span class="keyword">new</span> File(<span class="string">"dest"</span>),<span class="keyword">new</span> File(<span class="string">"dest3"</span>));</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">//拷贝URL内容</span></span><br><span class="line">        String Url = <span class="string">"https://www.baidu.com"</span>;</span><br><span class="line">        FileUtils.copyURLToFile(<span class="keyword">new</span> URL(Url),<span class="keyword">new</span> File(<span class="string">"copybaidu.txt"</span>));*/</span><br><span class="line"></span><br><span class="line">        <span class="comment">//将url内容拷贝到字符串中</span></span><br><span class="line">        String string = IOUtils.toString(<span class="keyword">new</span> URL(Url), <span class="string">"UTF-8"</span>);</span><br><span class="line">        System.out.println(string);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Java-基础/" rel="tag"># -Java -基础</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/07/29/Java的IO流基本知识点/" rel="next" title="Java的IO流基本知识点">
+                <i class="fa fa-chevron-left"></i> Java的IO流基本知识点
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+	
+	<div>
+        
+    </div>
+	
+	
+	
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+  
+  
+  
+  
+
+
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/MyAvatar.jpg" alt="Mars Man">
+            
+              <p class="site-author-name" itemprop="name">Mars Man</p>
+              <p class="site-description motion-element" itemprop="description">个人博客，记录学习日常,java,spring,linux,mysql</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/Y-Mister" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#CommonsIO的相关使用"><span class="nav-number">1.</span> <span class="nav-text">CommonsIO的相关使用</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Mars Man</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
