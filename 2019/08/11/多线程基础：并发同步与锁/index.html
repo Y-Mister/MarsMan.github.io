@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="-java -多线程,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="多线程进阶：并发、同步与锁线程的同步1. 并发控制synchronized之又快又好 什么叫并发  同一个对象被多个线程同时操作：例如针对同一账户的同时存取、同时购买同一车次的火车票等；   线程不安全  当多个线程对同一对象/数据存在读取且修改的行为时，便会出现数据异常的现象，成为线程不安全；  12345678910111213141516171819202122232425262728293">
+<meta name="keywords" content="-java -多线程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="多线程基础：并发同步与锁">
+<meta property="og:url" content="https://MarsMan.github.io/2019/08/11/多线程基础：并发同步与锁/index.html">
+<meta property="og:site_name" content="YuanHang&#39;blog">
+<meta property="og:description" content="多线程进阶：并发、同步与锁线程的同步1. 并发控制synchronized之又快又好 什么叫并发  同一个对象被多个线程同时操作：例如针对同一账户的同时存取、同时购买同一车次的火车票等；   线程不安全  当多个线程对同一对象/数据存在读取且修改的行为时，便会出现数据异常的现象，成为线程不安全；  12345678910111213141516171819202122232425262728293">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-08-11T14:55:52.646Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="多线程基础：并发同步与锁">
+<meta name="twitter:description" content="多线程进阶：并发、同步与锁线程的同步1. 并发控制synchronized之又快又好 什么叫并发  同一个对象被多个线程同时操作：例如针对同一账户的同时存取、同时购买同一车次的火车票等；   线程不安全  当多个线程对同一对象/数据存在读取且修改的行为时，便会出现数据异常的现象，成为线程不安全；  12345678910111213141516171819202122232425262728293">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://MarsMan.github.io/2019/08/11/多线程基础：并发同步与锁/">
+
+
+
+
+
+  <title>多线程基础：并发同步与锁 | YuanHang'blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">YuanHang'blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">袁航的个人博客</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://MarsMan.github.io/2019/08/11/多线程基础：并发同步与锁/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Mars Man">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/MyAvatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="YuanHang'blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">多线程基础：并发同步与锁</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-11T22:52:15+08:00">
+                2019-08-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java基础-多线程/" itemprop="url" rel="index">
+                    <span itemprop="name">-java基础 -多线程</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="多线程进阶：并发、同步与锁"><a href="#多线程进阶：并发、同步与锁" class="headerlink" title="多线程进阶：并发、同步与锁"></a>多线程进阶：并发、同步与锁</h3><h4 id="线程的同步"><a href="#线程的同步" class="headerlink" title="线程的同步"></a>线程的同步</h4><h5 id="1-并发控制synchronized之又快又好"><a href="#1-并发控制synchronized之又快又好" class="headerlink" title="1. 并发控制synchronized之又快又好"></a>1. 并发控制synchronized之又快又好</h5><ol>
+<li><p>什么叫并发</p>
+<blockquote>
+<p><strong>同一个对象被多个线程同时操作</strong>：例如针对同一账户的同时存取、同时购买同一车次的火车票等；</p>
+</blockquote>
+</li>
+<li><p>线程不安全</p>
+<blockquote>
+<p>当多个线程对同一对象/数据存在读取且修改的行为时，便会出现数据异常的现象，成为线程不安全；</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*事例一：购票行为*/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">unsafe</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//一份资源</span></span><br><span class="line">        UnsafeWeb12306 web = <span class="keyword">new</span> UnsafeWeb12306();</span><br><span class="line">        <span class="comment">//多个代理</span></span><br><span class="line">        <span class="keyword">new</span> Thread(web,<span class="string">"老王"</span>).start();</span><br><span class="line">        <span class="keyword">new</span> Thread(web,<span class="string">"老李"</span>).start();</span><br><span class="line">        <span class="keyword">new</span> Thread(web,<span class="string">"老刘"</span>).start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UnsafeWeb12306</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//票数</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> ticketNum = <span class="number">10</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> flag=<span class="keyword">true</span>;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">while</span> (flag) &#123;</span><br><span class="line">            test();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (ticketNum &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">            flag=<span class="keyword">false</span>;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Thread.sleep(<span class="number">200</span>);</span><br><span class="line">            ticketNum--;</span><br><span class="line">            System.out.println(Thread.currentThread().getName() + <span class="string">"买了一张票，还剩："</span> + ticketNum + <span class="string">"张票"</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/*结果：出现多个人购买同一张票，负数票</span></span><br><span class="line"><span class="comment">老李买了一张票，还剩：8张票</span></span><br><span class="line"><span class="comment">老刘买了一张票，还剩：7张票</span></span><br><span class="line"><span class="comment">老王买了一张票，还剩：8张票</span></span><br><span class="line"><span class="comment">老李买了一张票，还剩：5张票</span></span><br><span class="line"><span class="comment">老刘买了一张票，还剩：4张票</span></span><br><span class="line"><span class="comment">老王买了一张票，还剩：5张票</span></span><br><span class="line"><span class="comment">老刘买了一张票，还剩：3张票</span></span><br><span class="line"><span class="comment">老王买了一张票，还剩：2张票</span></span><br><span class="line"><span class="comment">老李买了一张票，还剩：1张票</span></span><br><span class="line"><span class="comment">老刘买了一张票，还剩：-1张票</span></span><br><span class="line"><span class="comment">老李买了一张票，还剩：-2张票</span></span><br><span class="line"><span class="comment">老王买了一张票，还剩：-1张票</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*事例二：取钱*/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">unsafe02</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Account account = <span class="keyword">new</span> Account(<span class="number">100</span>,<span class="string">"储蓄金"</span>);</span><br><span class="line">        Drawing husband = <span class="keyword">new</span> Drawing(account,<span class="number">80</span>,<span class="string">"老公"</span>);</span><br><span class="line">        Drawing wife = <span class="keyword">new</span> Drawing(account,<span class="number">90</span>,<span class="string">"妻子"</span>);</span><br><span class="line">        husband.start();</span><br><span class="line">        wife.start();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Account</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> money;</span><br><span class="line">    String name;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Account</span><span class="params">(<span class="keyword">int</span> money, String name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.money = money;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//模拟提款</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Drawing</span> <span class="keyword">extends</span> <span class="title">Thread</span></span>&#123;</span><br><span class="line">    Account account;</span><br><span class="line">    <span class="keyword">int</span> drawingMoney;</span><br><span class="line">    <span class="keyword">int</span> pocketMoney;<span class="comment">//取钱总数</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (account.money&lt;<span class="number">0</span>)&#123;</span><br><span class="line">            System.out.println(<span class="string">"余额不足，无法取钱"</span>);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">            pocketMoney+=drawingMoney;</span><br><span class="line">            account.money-=drawingMoney;</span><br><span class="line">            System.out.println(<span class="keyword">this</span>.getName()+<span class="string">"--&gt;账户余额为"</span>+account.money);</span><br><span class="line">            System.out.println(<span class="keyword">this</span>.getName()+<span class="string">"--&gt;口袋里有钱"</span>+pocketMoney);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Drawing</span><span class="params">(Account account, <span class="keyword">int</span> drawingMoney,String name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(name);</span><br><span class="line">        <span class="keyword">this</span>.account = account;</span><br><span class="line">        <span class="keyword">this</span>.drawingMoney = drawingMoney;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/*结果：对同一账户，取出负数余额</span></span><br><span class="line"><span class="comment">老公--&gt;账户余额为20</span></span><br><span class="line"><span class="comment">老公--&gt;口袋里有钱80</span></span><br><span class="line"><span class="comment">妻子--&gt;账户余额为-70</span></span><br><span class="line"><span class="comment">妻子--&gt;口袋里有钱90</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>线程同步</p>
+<blockquote>
+<p>通过队列实现的等待机制，多个需要同时访问该对象的进程进入这个对象的等待池形成队列；形成队列后，每个当前获得该对象操作权限的线程都会对该对象加锁，保证在自己用完之前其他线程无法获得数据；</p>
+<p>所以线程同步的二要素：队列与锁；</p>
+<p>多线程的锁：通过synchronized关键字实现，排他锁，独占资源，存在性能问题； </p>
+</blockquote>
+<p>synchronized有两种用法：</p>
+<blockquote>
+<p>synchronized方法与synchronized块；</p>
+<p>synchronized方法控制对“成员变量/类变量”对象的访问，其范围若太大，会严重影响效率，范围过小又无法锁住不安全；</p>
+</blockquote>
+<p>synchronized锁的用法的具体：</p>
+<blockquote>
+<p>静态方法加synchronized关键字；</p>
+<p>实例方法（普通方法）加synchronized关键字；</p>
+<p>方法中使用同步代码块；</p>
+</blockquote>
+<p>那么synchronized锁住的究竟是谁呢？</p>
+<blockquote>
+<p>synchronized能锁住的一共有两种情况：</p>
+<p>锁住类；</p>
+<p>锁住对象实例；</p>
+</blockquote>
+<p>那么synchronized具体用法中锁住的究竟是谁呢？</p>
+<blockquote>
+<p>静态方法加synchronized：由于静态方法属于类而不是某个实例，所以它锁住的就是类；</p>
+<p>实例方法加synchronized：实例方法属于每一个实例对象，不被对象共享，因此它锁住的就是对象实例</p>
+<p>那么同步代码块呢？</p>
+</blockquote>
+<p>同步代码块锁住的究竟是谁？</p>
+<blockquote>
+<p>其一：同步代码块的使用 synchronized(this){…}，this关键字指代当前对象实例，所以其锁住的是对象实例，与实例方法上加synchronized关键字无异；</p>
+<p>其二：Object obj = new Object(); synchronized(obj){…..}，即针对实例对象的内部实例对象加锁，锁住的是具体的内部对象实例。其中obj称之为同步监视器，obj可以是任何对象，推荐使用共享资源作为同步监视器；</p>
+<p>其三：synchronized(类名.class)：等同于静态方法加synchronized关键字，锁住的是类</p>
+<p>其二中，同步监视器的执行过程：</p>
+<p>线程一访问，锁定同步监视器，执行其中代码；</p>
+<p>线程二访问，发现同步监视器被锁，无法访问；</p>
+<p>线程一访问完毕，释放同步监视器；</p>
+<p>线程二再次尝试访问，发现同步监视器为锁定，将其锁定并访问</p>
+</blockquote>
+</li>
+<li><p>synchronized方法与synchronized块的比较</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*synchronized方法*/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">safeTest02</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Account account = <span class="keyword">new</span> Account(<span class="number">100</span>,<span class="string">"储蓄金"</span>);</span><br><span class="line">        SynDrawing husband = <span class="keyword">new</span> SynDrawing(account,<span class="number">80</span>,<span class="string">"老公"</span>);</span><br><span class="line">        SynDrawing wife = <span class="keyword">new</span> SynDrawing(account,<span class="number">90</span>,<span class="string">"妻子"</span>);</span><br><span class="line">        husband.start();</span><br><span class="line">        wife.start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SafeDrawing</span> <span class="keyword">extends</span> <span class="title">Thread</span></span>&#123;</span><br><span class="line">    Account account;</span><br><span class="line">    <span class="keyword">int</span> drawingMoney;</span><br><span class="line">    <span class="keyword">int</span> pocketMoney;<span class="comment">//取钱总数</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        test();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//这里锁定失败，因为这里需要对是对account中的数据进行操作，</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (account.money-drawingMoney&lt;<span class="number">0</span>)&#123;</span><br><span class="line">            System.out.println(<span class="string">"余额不足，无法取钱"</span>);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        pocketMoney+=drawingMoney;</span><br><span class="line">        account.money-=drawingMoney;</span><br><span class="line">        System.out.println(<span class="keyword">this</span>.getName()+<span class="string">"--&gt;账户余额为"</span>+account.money);</span><br><span class="line">        System.out.println(<span class="keyword">this</span>.getName()+<span class="string">"--&gt;口袋里有钱"</span>+pocketMoney);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">SafeDrawing</span><span class="params">(Account account, <span class="keyword">int</span> drawingMoney,String name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(name);</span><br><span class="line">        <span class="keyword">this</span>.account = account;</span><br><span class="line">        <span class="keyword">this</span>.drawingMoney = drawingMoney;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/*结果之一：加上sleep后，仍然会出现负数与不合法数据</span></span><br><span class="line"><span class="comment">老公--&gt;账户余额为20</span></span><br><span class="line"><span class="comment">老公--&gt;口袋里有钱80</span></span><br><span class="line"><span class="comment">妻子--&gt;账户余额为-70</span></span><br><span class="line"><span class="comment">妻子--&gt;口袋里有钱90</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*synchronized块*/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">synTest01</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Account account = <span class="keyword">new</span> Account(<span class="number">100</span>,<span class="string">"储蓄金"</span>);</span><br><span class="line">        SynDrawing husband = <span class="keyword">new</span> SynDrawing(account,<span class="number">80</span>,<span class="string">"老公"</span>);</span><br><span class="line">        SynDrawing wife = <span class="keyword">new</span> SynDrawing(account,<span class="number">90</span>,<span class="string">"妻子"</span>);</span><br><span class="line">        husband.start();</span><br><span class="line">        wife.start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SynDrawing</span> <span class="keyword">extends</span> <span class="title">Thread</span></span>&#123;</span><br><span class="line">    Account account;</span><br><span class="line">    <span class="keyword">int</span> drawingMoney;</span><br><span class="line">    <span class="keyword">int</span> pocketMoney;<span class="comment">//取钱总数</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        test();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//这里使用同步块锁定account，</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span>  <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span></span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">synchronized</span>(account)&#123;</span><br><span class="line">            <span class="keyword">if</span> (account.money-drawingMoney&lt;<span class="number">0</span>)&#123;</span><br><span class="line">                System.out.println(<span class="string">"余额不足，无法取钱"</span>);</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">            pocketMoney+=drawingMoney;</span><br><span class="line">            account.money-=drawingMoney;</span><br><span class="line">            System.out.println(<span class="keyword">this</span>.getName()+<span class="string">"--&gt;账户余额为"</span>+account.money);</span><br><span class="line">            System.out.println(<span class="keyword">this</span>.getName()+<span class="string">"--&gt;口袋里有钱"</span>+pocketMoney);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">SynDrawing</span><span class="params">(Account account, <span class="keyword">int</span> drawingMoney, String name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(name);</span><br><span class="line">        <span class="keyword">this</span>.account = account;</span><br><span class="line">        <span class="keyword">this</span>.drawingMoney = drawingMoney;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/*结果：加不加延时，数据都不会出现错误</span></span><br><span class="line"><span class="comment">老公--&gt;账户余额为20</span></span><br><span class="line"><span class="comment">老公--&gt;口袋里有钱80</span></span><br><span class="line"><span class="comment">余额不足，无法取钱</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<p>问题：synchronized方法锁住对象后究竟起到了什么作用</p>
+</li>
+<li><p>同步块的粒度与作用测试</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">synTest02</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//一份资源</span></span><br><span class="line">        synWeb12306 web = <span class="keyword">new</span> synWeb12306();</span><br><span class="line">        <span class="comment">//多个代理</span></span><br><span class="line">        <span class="keyword">new</span> Thread(web,<span class="string">"老王"</span>).start();</span><br><span class="line">        <span class="keyword">new</span> Thread(web,<span class="string">"老李"</span>).start();</span><br><span class="line">        <span class="keyword">new</span> Thread(web,<span class="string">"老刘"</span>).start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">synWeb12306</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//票数</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> ticketNum = <span class="number">10</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> flag=<span class="keyword">true</span>;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">while</span> (flag) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">100</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">            test5();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//线程安全，同步</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">test1</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (ticketNum &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">            flag=<span class="keyword">false</span>;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Thread.sleep(<span class="number">200</span>);</span><br><span class="line">            ticketNum--;</span><br><span class="line">            System.out.println(Thread.currentThread().getName() + <span class="string">"买了一张票，还剩："</span> + ticketNum + <span class="string">"张票"</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//同样能够成功锁住资源</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">test2</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">synchronized</span>(<span class="keyword">this</span>)&#123;</span><br><span class="line">            <span class="keyword">if</span> (ticketNum &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">                flag=<span class="keyword">false</span>;</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">200</span>);</span><br><span class="line">                ticketNum--;</span><br><span class="line">                System.out.println(Thread.currentThread().getName() + <span class="string">"买了一张票，还剩："</span> + ticketNum + <span class="string">"张票"</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//存疑！无法锁住资源，因为ticketNum的值始终在变，无法锁住同一对象，所以使用锁一定要锁住地址不变的对象，同时flag也没有被锁住</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">test3</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">synchronized</span>(Integer.valueOf(ticketNum))&#123;</span><br><span class="line">            <span class="keyword">if</span> (ticketNum &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">                flag=<span class="keyword">false</span>;</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">200</span>);</span><br><span class="line">                ticketNum--;</span><br><span class="line">                System.out.println(Thread.currentThread().getName() + <span class="string">"买了一张票，还剩："</span> + ticketNum + <span class="string">"张票"</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//缩小同步块的范围，无法锁住资源</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">test4</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">synchronized</span>(<span class="keyword">this</span>)&#123;</span><br><span class="line">            <span class="keyword">if</span> (ticketNum &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">                flag=<span class="keyword">false</span>;</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">200</span>);</span><br><span class="line">                ticketNum--;</span><br><span class="line">                System.out.println(Thread.currentThread().getName() + <span class="string">"买了一张票，还剩："</span> + ticketNum + <span class="string">"张票"</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//锁住合理的范围（数据的完整性），提高性能与效率，此处为双重检测，考虑临界值的问题</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">test5</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (ticketNum &lt;= <span class="number">0</span>) &#123;<span class="comment">//没票的情况下，避免其他线程等待</span></span><br><span class="line">            flag=<span class="keyword">false</span>;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">synchronized</span>(<span class="keyword">this</span>)&#123;</span><br><span class="line">            <span class="keyword">if</span> (ticketNum &lt;= <span class="number">0</span>) &#123; <span class="comment">//考虑最后一张票的情况</span></span><br><span class="line">                flag=<span class="keyword">false</span>;</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">200</span>);</span><br><span class="line">                ticketNum--;</span><br><span class="line">                System.out.println(Thread.currentThread().getName() + <span class="string">"买了一张票，还剩："</span> + ticketNum + <span class="string">"张票"</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+<h5 id="2-并发的实际应用实例"><a href="#2-并发的实际应用实例" class="headerlink" title="2.并发的实际应用实例"></a>2.并发的实际应用实例</h5><ol>
+<li><p>电影院购票(使用同步块实现)</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HappyCinema</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        List&lt;Integer&gt; avaliable = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">        avaliable.add(<span class="number">1</span>);</span><br><span class="line">        avaliable.add(<span class="number">2</span>);</span><br><span class="line">        avaliable.add(<span class="number">3</span>);</span><br><span class="line">        avaliable.add(<span class="number">6</span>);</span><br><span class="line">        avaliable.add(<span class="number">7</span>);</span><br><span class="line">        List&lt;Integer&gt; seats1 = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">        seats1.add(<span class="number">2</span>);</span><br><span class="line">        seats1.add(<span class="number">3</span>);</span><br><span class="line">        List&lt;Integer&gt; seats2 = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">        seats2.add(<span class="number">1</span>);</span><br><span class="line">        seats2.add(<span class="number">2</span>);</span><br><span class="line">        seats2.add(<span class="number">3</span>);</span><br><span class="line"></span><br><span class="line">        Cinema cinema = <span class="keyword">new</span> Cinema(avaliable,<span class="string">"幸福蓝海"</span>);</span><br><span class="line">        Customer customer = <span class="keyword">new</span> Customer(cinema,seats1);</span><br><span class="line">        Customer customer1 = <span class="keyword">new</span> Customer(cinema,seats2);</span><br><span class="line">        <span class="keyword">new</span> Thread(customer,<span class="string">"老王"</span>).start();</span><br><span class="line">        <span class="keyword">new</span> Thread(customer1,<span class="string">"老李"</span>).start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//顾客</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Customer</span> <span class="keyword">implements</span> <span class="title">Runnable</span></span>&#123;</span><br><span class="line">    Cinema cinema;</span><br><span class="line">    List&lt;Integer&gt; seats;<span class="comment">//位置数</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Customer</span><span class="params">(Cinema cinema, List&lt;Integer&gt; seats)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.cinema = cinema;</span><br><span class="line">        <span class="keyword">this</span>.seats = seats;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">synchronized</span> (cinema)&#123;</span><br><span class="line">            <span class="keyword">boolean</span> flag = cinema.bookTickets(seats);</span><br><span class="line">            <span class="keyword">if</span> (flag)&#123;</span><br><span class="line">                System.out.println(<span class="string">"出票成功--&gt;"</span>+Thread.currentThread().getName()+<span class="string">"购买了"</span>+seats+<span class="string">"张票"</span>);</span><br><span class="line">            &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">                System.out.println(<span class="string">"出票失败，位置不足"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">//影院</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Cinema</span></span>&#123;</span><br><span class="line">    List&lt;Integer&gt; available;<span class="comment">//可用位置</span></span><br><span class="line">    String name;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Cinema</span><span class="params">( List&lt;Integer&gt; available, String name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.available = available;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">bookTickets</span><span class="params">(List&lt;Integer&gt; seats)</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"可用位置为："</span>+available);</span><br><span class="line">        List&lt;Integer&gt; copy = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">        copy.addAll(available);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//可用座位减去想选的座位</span></span><br><span class="line">        copy.removeAll(seats);</span><br><span class="line">        <span class="keyword">if</span> (available.size()-copy.size()!=seats.size())&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//操作成功</span></span><br><span class="line">        available=copy;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/*操作结果：</span></span><br><span class="line"><span class="comment">可用位置为：[1, 2, 3, 6, 7]</span></span><br><span class="line"><span class="comment">出票成功--&gt;老王购买了[2, 3]张票</span></span><br><span class="line"><span class="comment">可用位置为：[1, 6, 7]</span></span><br><span class="line"><span class="comment">出票失败，位置不足</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>火车票购买，使用同步方法实现</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Happy12306</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        SnyWeb12306 c = <span class="keyword">new</span> SnyWeb12306(<span class="number">2</span>,<span class="string">"浦口火车站"</span>);</span><br><span class="line">        Passenger passenger=<span class="keyword">new</span> Passenger(c,<span class="string">"老王"</span>,<span class="number">2</span>);</span><br><span class="line">        Passenger passenger2=<span class="keyword">new</span> Passenger(c,<span class="string">"老李"</span>,<span class="number">1</span>);</span><br><span class="line">        passenger.start();</span><br><span class="line">        passenger2.start();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Passenger</span> <span class="keyword">extends</span> <span class="title">Thread</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> seats;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Passenger</span><span class="params">(Runnable target, String name, <span class="keyword">int</span> seats)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(target, name);</span><br><span class="line">        <span class="keyword">this</span>.seats = seats;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SnyWeb12306</span> <span class="keyword">implements</span> <span class="title">Runnable</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> available;</span><br><span class="line">    String name;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">SnyWeb12306</span><span class="params">(<span class="keyword">int</span> available, String name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.available = available;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Passenger passenger = (Passenger)Thread.currentThread();</span><br><span class="line">        <span class="keyword">boolean</span> flag = <span class="keyword">this</span>.bookTickets(passenger.seats);</span><br><span class="line">        <span class="keyword">if</span> (flag)&#123;</span><br><span class="line">            System.out.println(<span class="string">"购票成功:"</span>+passenger.getName()+<span class="string">"-&gt;购票"</span>+passenger.seats+<span class="string">"张"</span>);</span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">            System.out.println(<span class="string">"购票失败，余票不足"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">boolean</span> <span class="title">bookTickets</span><span class="params">(<span class="keyword">int</span> seats)</span></span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (seats&gt;available)&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        available-=seats;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/*此处乘客直接继承Thread做成代理，为web12306代理，好处是可以添加自己想要的其他变量，乘客运行时虽然走的是web12306的run方法，但是当前线程仍然是乘客线程，所以通过乘客的线程强转就可以获得乘客内定义的各种自己的成员变量*/</span></span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+<ol start="3">
+<li><p>并发容器</p>
+<blockquote>
+<p>有CopyOnWriteArrayList、currentHashMap;</p>
+</blockquote>
+</li>
+</ol>
+<ol start="4">
+<li><p>死锁</p>
+<blockquote>
+<p>过多的同步导致互相不释放资源，从而相互等待陷入死循环。一般发生于同步中持有多个对象的锁</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*镜子与口红死锁*/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DeadLock</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        MakeUp girl1 = <span class="keyword">new</span> MakeUp(<span class="number">0</span>,<span class="string">"小红"</span>);</span><br><span class="line">        MakeUp girl2 = <span class="keyword">new</span> MakeUp(<span class="number">1</span>,<span class="string">"小丽"</span>);</span><br><span class="line">        girl1.start();</span><br><span class="line">        girl2.start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">lipstick</span></span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">mirror</span></span>&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MakeUp</span> <span class="keyword">extends</span> <span class="title">Thread</span></span>&#123;</span><br><span class="line">    <span class="keyword">static</span> lipstick stick = <span class="keyword">new</span> lipstick();</span><br><span class="line">    <span class="keyword">static</span> mirror mir = <span class="keyword">new</span> mirror();</span><br><span class="line">    <span class="comment">//选择</span></span><br><span class="line">    <span class="keyword">int</span> choice;</span><br><span class="line">    String girl;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MakeUp</span><span class="params">(<span class="keyword">int</span> choice, String girl)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.choice = choice;</span><br><span class="line">        <span class="keyword">this</span>.girl = girl;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        makeup();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//相互持有对方的对象锁，就可能造成死锁</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">makeup</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (choice==<span class="number">0</span>)&#123;</span><br><span class="line">            <span class="keyword">synchronized</span> (stick)&#123;</span><br><span class="line">                System.out.println(girl +<span class="string">"获得口红"</span>);</span><br><span class="line">                <span class="comment">//1秒后想拥有镜子的锁</span></span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">                &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">synchronized</span> (mir)&#123;</span><br><span class="line">                    System.out.println(girl+<span class="string">"照镜子"</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">            <span class="keyword">synchronized</span> (mir)&#123;</span><br><span class="line">                System.out.println(girl+<span class="string">"照镜子"</span>);</span><br><span class="line"></span><br><span class="line">                <span class="comment">//2秒后想拿到口红</span></span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    Thread.sleep(<span class="number">2000</span>);</span><br><span class="line">                &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">synchronized</span> (stick) &#123;</span><br><span class="line">                    System.out.println(girl + <span class="string">"获得口红"</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/*结果：永远无法运行结束</span></span><br><span class="line"><span class="comment">小红获得口红</span></span><br><span class="line"><span class="comment">小丽照镜子</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*镜子与口红死锁的解决：不要锁套锁，就可以避免死锁*/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">fixDeadLock</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        MakeUp girl1 = <span class="keyword">new</span> MakeUp(<span class="number">0</span>,<span class="string">"小红"</span>);</span><br><span class="line">        MakeUp girl2 = <span class="keyword">new</span> MakeUp(<span class="number">1</span>,<span class="string">"小丽"</span>);</span><br><span class="line">        girl1.start();</span><br><span class="line">        girl2.start();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">lipstick</span></span>&#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">mirror</span></span>&#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MakeUp</span> <span class="keyword">extends</span> <span class="title">Thread</span></span>&#123;</span><br><span class="line">    <span class="keyword">static</span> lipstick stick = <span class="keyword">new</span> lipstick();</span><br><span class="line">    <span class="keyword">static</span> mirror mir = <span class="keyword">new</span> mirror();</span><br><span class="line">    <span class="comment">//选择</span></span><br><span class="line">    <span class="keyword">int</span> choice;</span><br><span class="line">    String girl;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MakeUp</span><span class="params">(<span class="keyword">int</span> choice, String girl)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.choice = choice;</span><br><span class="line">        <span class="keyword">this</span>.girl = girl;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        makeup();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//相互持有对方的对象锁，就可能造成死锁</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">makeup</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (choice==<span class="number">0</span>)&#123;</span><br><span class="line">            <span class="keyword">synchronized</span> (stick)&#123;</span><br><span class="line">                System.out.println(girl +<span class="string">"获得口红"</span>);</span><br><span class="line">                <span class="comment">//1秒后想拥有镜子的锁</span></span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">                &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">synchronized</span> (mir)&#123;</span><br><span class="line">                System.out.println(girl+<span class="string">"照镜子"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">            <span class="keyword">synchronized</span> (mir)&#123;</span><br><span class="line">                System.out.println(girl+<span class="string">"照镜子"</span>);</span><br><span class="line"></span><br><span class="line">                <span class="comment">//2秒后想拿到口红</span></span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    Thread.sleep(<span class="number">2000</span>);</span><br><span class="line">                &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">synchronized</span> (stick) &#123;</span><br><span class="line">                System.out.println(girl + <span class="string">"获得口红"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/*结果：解决方法：不要在同一个代码块中持有多个对象锁</span></span><br><span class="line"><span class="comment">小红获得口红</span></span><br><span class="line"><span class="comment">小丽照镜子</span></span><br><span class="line"><span class="comment">小丽获得口红</span></span><br><span class="line"><span class="comment">小红照镜子</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+<h5 id="3-线程的通信与协作"><a href="#3-线程的通信与协作" class="headerlink" title="3.线程的通信与协作"></a>3.线程的通信与协作</h5><ol>
+<li><p>生产者消费者模式</p>
+<blockquote>
+<p>不属于23中设计模式之一,23中设计模式处理的是类与类之间的关系；</p>
+<p>生产者消费者模式处理的是线程间的通信域协作；</p>
+<p>生产者消费者共享同一个资源，且二者相互依赖，互为条件；</p>
+<p>对于生产者，没有生产出资源之前，要通知消费者等待。生产出商品之后，要通知消费者消费；</p>
+<p>对于消费者，消费之后要通知生产者消费结束，需要提供新的资源以供消费；</p>
+<p>该模式下，仅有synchronized是不够的，还需要等待和通知，因为synchronized不能够实现线程间消息传递</p>
+</blockquote>
+</li>
+<li><p>线程通信的解决方式</p>
+<blockquote>
+<p>并发协作模型：管程法</p>
+<p>在生产者和消费者之间有缓冲区，生产者将生产出的数据放入缓冲区，消费者从缓冲区取数据消费，缓冲区由容器实现；</p>
+<p>生产者可以是方法、对象、进程、线程；</p>
+<p>消费者可以是方法、对象、进程、线程；</p>
+</blockquote>
+<blockquote>
+<p>并发协作模型：信号灯法</p>
+</blockquote>
+<blockquote>
+<p>java提供三个方法解决线程间通信问题：</p>
+<p>wait();  wait(long timeout);   notify();    notifyAll();  注意wait()会释放锁</p>
+<p>这些方法只能放在同步方法或同步块中，否则会抛出异常</p>
+</blockquote>
+</li>
+<li><p>管程法实现</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*馒头的生产和消费，一共存在4个角色，生产者，消费者，容器与馒头（资源）*/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CoTest01</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        SynContainer container = <span class="keyword">new</span> SynContainer();</span><br><span class="line">        <span class="keyword">new</span> Producer(container).start();</span><br><span class="line">        <span class="keyword">new</span> Consumer(container).start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//多线程生产者</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Producer</span> <span class="keyword">extends</span> <span class="title">Thread</span></span>&#123;</span><br><span class="line">    SynContainer container;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Producer</span><span class="params">(SynContainer container)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.container = container;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">//开始生产</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;=<span class="number">10</span>;i++)&#123;</span><br><span class="line">            System.out.println(<span class="string">"生产--&gt;第"</span>+i+<span class="string">"个馒头"</span>);</span><br><span class="line">            container.push(<span class="keyword">new</span> Steamerbun(i));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//多线程消费者</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Consumer</span> <span class="keyword">extends</span> <span class="title">Thread</span></span>&#123;</span><br><span class="line">    SynContainer container;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Consumer</span><span class="params">(SynContainer container)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.container = container;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">//开始消费</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">1</span>;i&lt;=<span class="number">10</span>;i++)&#123;</span><br><span class="line">            System.out.println(<span class="string">"消费--&gt;第"</span>+container.pop().id+<span class="string">"个馒头"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//缓冲区</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SynContainer</span></span>&#123;</span><br><span class="line">    Steamerbun[] buns = <span class="keyword">new</span> Steamerbun[<span class="number">10</span>];</span><br><span class="line">    <span class="keyword">int</span> count=<span class="number">0</span>;</span><br><span class="line">    <span class="comment">//存放生产</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">push</span><span class="params">(Steamerbun steamerbun)</span></span>&#123;</span><br><span class="line">        <span class="comment">//什么时候可以生产</span></span><br><span class="line">        <span class="keyword">if</span> (count==buns.length)&#123; <span class="comment">//资源已满，无法生产，只能等待</span></span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="keyword">this</span>.wait(); <span class="comment">//线程阻塞，消费者通知生产，阻塞解除</span></span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        buns[count] = steamerbun;</span><br><span class="line">        count++;</span><br><span class="line">        <span class="keyword">this</span>.notifyAll();<span class="comment">//存在数据，可以通知消费</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//取出消费</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> Steamerbun <span class="title">pop</span><span class="params">()</span>  </span>&#123;</span><br><span class="line">        <span class="comment">//消费的限制 容器中是否存在数据</span></span><br><span class="line">        <span class="keyword">if</span> (count==<span class="number">0</span>)&#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="keyword">this</span>.wait();<span class="comment">//线程阻塞 生产者通知消费，则解除阻塞</span></span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//存在数据 可以消费</span></span><br><span class="line">        count--;</span><br><span class="line">        Steamerbun bun = buns[count];</span><br><span class="line">        <span class="keyword">this</span>.notifyAll();<span class="comment">//产生消费，存在空间了，可以唤醒生产者生产</span></span><br><span class="line">        <span class="keyword">return</span> bun;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//馒头</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Steamerbun</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> id;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Steamerbun</span><span class="params">(<span class="keyword">int</span> id)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.id = id;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*结果：</span></span><br><span class="line"><span class="comment">生产--&gt;第1个馒头</span></span><br><span class="line"><span class="comment">生产--&gt;第2个馒头</span></span><br><span class="line"><span class="comment">生产--&gt;第3个馒头</span></span><br><span class="line"><span class="comment">生产--&gt;第4个馒头</span></span><br><span class="line"><span class="comment">生产--&gt;第5个馒头</span></span><br><span class="line"><span class="comment">生产--&gt;第6个馒头</span></span><br><span class="line"><span class="comment">生产--&gt;第7个馒头</span></span><br><span class="line"><span class="comment">生产--&gt;第8个馒头</span></span><br><span class="line"><span class="comment">生产--&gt;第9个馒头</span></span><br><span class="line"><span class="comment">生产--&gt;第10个馒头</span></span><br><span class="line"><span class="comment">消费--&gt;第8个馒头</span></span><br><span class="line"><span class="comment">消费--&gt;第10个馒头</span></span><br><span class="line"><span class="comment">消费--&gt;第9个馒头</span></span><br><span class="line"><span class="comment">消费--&gt;第7个馒头</span></span><br><span class="line"><span class="comment">消费--&gt;第6个馒头</span></span><br><span class="line"><span class="comment">消费--&gt;第5个馒头</span></span><br><span class="line"><span class="comment">消费--&gt;第4个馒头</span></span><br><span class="line"><span class="comment">消费--&gt;第3个馒头</span></span><br><span class="line"><span class="comment">消费--&gt;第2个馒头</span></span><br><span class="line"><span class="comment">消费--&gt;第1个馒头</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>信号灯法：借助标志位实现交错通信</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*演员表演与观众观看*/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CoTest02</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        Tv tv = <span class="keyword">new</span> Tv();</span><br><span class="line">        Actor actor = <span class="keyword">new</span> Actor(tv);</span><br><span class="line">        Wathcer wathcer = <span class="keyword">new</span> Wathcer(tv);</span><br><span class="line">        actor.start();</span><br><span class="line">        wathcer.start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//生产者演员</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Actor</span> <span class="keyword">extends</span> <span class="title">Thread</span></span>&#123;</span><br><span class="line">    Tv tv;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Actor</span><span class="params">(Tv tv)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.tv = tv;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="number">20</span>;i++)&#123;</span><br><span class="line">            <span class="keyword">if</span> (i%<span class="number">2</span>==<span class="number">0</span>)&#123;</span><br><span class="line">                <span class="keyword">this</span>.tv.play(<span class="string">"奇葩说"</span>);</span><br><span class="line">            &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                <span class="keyword">this</span>.tv.play(<span class="string">"广告"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//消费者观众</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Wathcer</span> <span class="keyword">extends</span> <span class="title">Thread</span></span>&#123;</span><br><span class="line">    Tv tv;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Wathcer</span><span class="params">(Tv tv)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.tv = tv;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="number">20</span>;i++)&#123;</span><br><span class="line">            tv.watch();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//同一个资源电视</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Tv</span></span>&#123;</span><br><span class="line">    String voice;</span><br><span class="line">    <span class="comment">//信号灯 True表示演员表演观众等待，false表示观众观看，演员等待</span></span><br><span class="line">    <span class="keyword">boolean</span> flag =<span class="keyword">true</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//表演</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">play</span><span class="params">(String voice)</span></span>&#123;</span><br><span class="line">        <span class="comment">//观众观看，演员等待</span></span><br><span class="line">        <span class="keyword">if</span> (flag==<span class="keyword">false</span>)&#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="keyword">this</span>.wait();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//演员表演</span></span><br><span class="line">        System.out.println(<span class="string">"演员表演了"</span>+voice);</span><br><span class="line">        <span class="keyword">this</span>.voice=voice;</span><br><span class="line">        <span class="keyword">this</span>.notifyAll();</span><br><span class="line">        <span class="comment">//表演完毕，该观众观看了</span></span><br><span class="line">        <span class="keyword">this</span>.flag=!<span class="keyword">this</span>.flag;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//观看</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">watch</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="comment">//演员表演</span></span><br><span class="line">        <span class="keyword">if</span> (flag)&#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="keyword">this</span>.wait();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//观看时刻</span></span><br><span class="line">        System.out.println(<span class="string">"观众听到了"</span>+voice);</span><br><span class="line">        <span class="keyword">this</span>.notifyAll();</span><br><span class="line">        <span class="comment">//切换标志</span></span><br><span class="line">        <span class="keyword">this</span>.flag=!<span class="keyword">this</span>.flag;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/*结果：</span></span><br><span class="line"><span class="comment">演员表演了奇葩说</span></span><br><span class="line"><span class="comment">观众听到了奇葩说</span></span><br><span class="line"><span class="comment">演员表演了广告</span></span><br><span class="line"><span class="comment">观众听到了广告</span></span><br><span class="line"><span class="comment">演员表演了奇葩说</span></span><br><span class="line"><span class="comment">观众听到了奇葩说</span></span><br><span class="line"><span class="comment">演员表演了广告</span></span><br><span class="line"><span class="comment">观众听到了广告</span></span><br><span class="line"><span class="comment">演员表演了奇葩说</span></span><br><span class="line"><span class="comment">观众听到了奇葩说</span></span><br><span class="line"><span class="comment">演员表演了广告</span></span><br><span class="line"><span class="comment">观众听到了广告</span></span><br><span class="line"><span class="comment">演员表演了奇葩说</span></span><br><span class="line"><span class="comment">观众听到了奇葩说</span></span><br><span class="line"><span class="comment">演员表演了广告</span></span><br><span class="line"><span class="comment">观众听到了广告</span></span><br><span class="line"><span class="comment">演员表演了奇葩说</span></span><br><span class="line"><span class="comment">观众听到了奇葩说</span></span><br><span class="line"><span class="comment">演员表演了广告</span></span><br><span class="line"><span class="comment">观众听到了广告</span></span><br><span class="line"><span class="comment">演员表演了奇葩说</span></span><br><span class="line"><span class="comment">观众听到了奇葩说</span></span><br><span class="line"><span class="comment">演员表演了广告</span></span><br><span class="line"><span class="comment">观众听到了广告</span></span><br><span class="line"><span class="comment">演员表演了奇葩说</span></span><br><span class="line"><span class="comment">观众听到了奇葩说</span></span><br><span class="line"><span class="comment">演员表演了广告</span></span><br><span class="line"><span class="comment">观众听到了广告</span></span><br><span class="line"><span class="comment">演员表演了奇葩说</span></span><br><span class="line"><span class="comment">观众听到了奇葩说</span></span><br><span class="line"><span class="comment">演员表演了广告</span></span><br><span class="line"><span class="comment">观众听到了广告</span></span><br><span class="line"><span class="comment">演员表演了奇葩说</span></span><br><span class="line"><span class="comment">观众听到了奇葩说</span></span><br><span class="line"><span class="comment">演员表演了广告</span></span><br><span class="line"><span class="comment">观众听到了广告</span></span><br><span class="line"><span class="comment">演员表演了奇葩说</span></span><br><span class="line"><span class="comment">观众听到了奇葩说</span></span><br><span class="line"><span class="comment">演员表演了广告</span></span><br><span class="line"><span class="comment">观众听到了广告</span></span><br><span class="line"><span class="comment">此处相比管程法少了一个角色，但我自己理解电视包括了容器与资源的功能，是生产者与消费者交互的中间件，演员想电视中放入自己表演的东西，而观众则通过电视看到演员表演的东西，演员不停的表演，观众不停的看，所以演员与观众是线程*/</span></span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/java-多线程/" rel="tag"># -java -多线程</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/08/11/多线程基础知识/" rel="next" title="多线程基础知识">
+                <i class="fa fa-chevron-left"></i> 多线程基础知识
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/08/11/多线程基础：高级主题/" rel="prev" title="多线程基础：高级主题">
+                多线程基础：高级主题 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+	
+	<div>
+        
+    </div>
+	
+	
+	
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+  
+  
+  
+  
+
+
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/MyAvatar.jpg" alt="Mars Man">
+            
+              <p class="site-author-name" itemprop="name">Mars Man</p>
+              <p class="site-description motion-element" itemprop="description">个人博客，记录学习日常,java,spring,linux,mysql</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/Y-Mister" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#多线程进阶：并发、同步与锁"><span class="nav-number">1.</span> <span class="nav-text">多线程进阶：并发、同步与锁</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#线程的同步"><span class="nav-number">1.1.</span> <span class="nav-text">线程的同步</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-并发控制synchronized之又快又好"><span class="nav-number">1.1.1.</span> <span class="nav-text">1. 并发控制synchronized之又快又好</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-并发的实际应用实例"><span class="nav-number">1.1.2.</span> <span class="nav-text">2.并发的实际应用实例</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#3-线程的通信与协作"><span class="nav-number">1.1.3.</span> <span class="nav-text">3.线程的通信与协作</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Mars Man</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
