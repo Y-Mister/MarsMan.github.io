@@ -82,14 +82,14 @@
 <meta name="description" content="springboot关于第一次搭建 搭建的重点 首先，项目pom依赖必须集成父项目springframework.boot的spring-boot-starter-parent启动器，其包含的内容见4 123456&amp;lt;parent&amp;gt;		&amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;		&amp;lt;artifactId&amp;gt;sp">
 <meta name="keywords" content="spring">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Springboot笔记（未完结）">
+<meta property="og:title" content="Springboot笔记（1-25章节）">
 <meta property="og:url" content="https://MarsMan.github.io/2019/08/29/Springboot笔记（1-25章节）/index.html">
 <meta property="og:site_name" content="YuanHang&#39;blog">
 <meta property="og:description" content="springboot关于第一次搭建 搭建的重点 首先，项目pom依赖必须集成父项目springframework.boot的spring-boot-starter-parent启动器，其包含的内容见4 123456&amp;lt;parent&amp;gt;		&amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;		&amp;lt;artifactId&amp;gt;sp">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-08-29T11:01:15.481Z">
+<meta property="og:updated_time" content="2019-09-03T12:21:37.486Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Springboot笔记（未完结）">
+<meta name="twitter:title" content="Springboot笔记（1-25章节）">
 <meta name="twitter:description" content="springboot关于第一次搭建 搭建的重点 首先，项目pom依赖必须集成父项目springframework.boot的spring-boot-starter-parent启动器，其包含的内容见4 123456&amp;lt;parent&amp;gt;		&amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;		&amp;lt;artifactId&amp;gt;sp">
 
 
@@ -126,7 +126,7 @@
 
 
 
-  <title>Springboot笔记（未完结） | YuanHang'blog</title>
+  <title>Springboot笔记（1-25章节） | YuanHang'blog</title>
   
 
 
@@ -270,7 +270,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Springboot笔记（未完结）</h1>
+          <h1 class="post-title" itemprop="name headline">Springboot笔记（1-25章节）</h1>
         
 
         <div class="post-meta">
@@ -425,7 +425,11 @@
 </tr>
 <tr>
 <td>@ConfigurationProperties</td>
-<td></td>
+<td>允许通过前缀获取配置文件中的相关数据源信息（前缀在YAML文件中可以理解为父节点）</td>
+</tr>
+<tr>
+<td>@profile</td>
+<td>通过properties文件中配置的不同prifile名启用不同的配置</td>
 </tr>
 </tbody></table>
 </li>
@@ -558,17 +562,146 @@
 <figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#application.yml</span></span><br><span class="line"><span class="attr">my:</span></span><br><span class="line"><span class="attr">  serverLocation:</span> <span class="number">8080</span></span><br><span class="line"><span class="attr">test:</span></span><br><span class="line"><span class="attr">    time:</span> <span class="number">20</span><span class="string">:37</span></span><br><span class="line"><span class="attr">    date:</span> <span class="number">2019</span><span class="string">/8/13</span></span><br><span class="line"><span class="attr">    heart:</span> <span class="string">impatient</span></span><br></pre></td></tr></table></figure>
 
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//测试类YMLTest 属性名要相同，前缀要写对，属性get/set方法要有</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="meta">@ConfigurationProperties</span>(prefix = <span class="string">"test"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">YMLTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String time;</span><br><span class="line">    <span class="keyword">private</span> String date;</span><br><span class="line">    <span class="keyword">private</span> String heart;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getTime</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> time;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setTime</span><span class="params">(String time)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.time = time;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getDate</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> date;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setDate</span><span class="params">(String date)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.date = date;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getHeart</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> heart;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setHeart</span><span class="params">(String heart)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.heart = heart;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//测试方法中输出 先通过autowried自动注入YMLtest类</span></span><br><span class="line">System.out.println(ymlTest.getDate()+<span class="string">" "</span>+ymlTest.getTime()+<span class="string">" "</span>+ymlTest.getHeart());</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>多profile YAML文件</p>
+<blockquote>
+<p>可以通过在YAML配置文件中通过<strong>spring.profile:value</strong>的方式，指定多个特定profile的指定YAMML文档</p>
+</blockquote>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">server:</span></span><br><span class="line"><span class="attr">  address:</span> <span class="number">192.168</span><span class="number">.1</span><span class="number">.100</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line"><span class="attr">  profiles:</span> <span class="string">development</span></span><br><span class="line"><span class="attr">server:</span></span><br><span class="line"><span class="attr">  address:</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line"><span class="attr">  profiles:</span> <span class="string">production</span> <span class="string">&amp;</span> <span class="string">eu-central</span></span><br><span class="line"><span class="attr">server:</span></span><br><span class="line"><span class="attr">  address:</span> <span class="number">192.168</span><span class="number">.1</span><span class="number">.120</span></span><br></pre></td></tr></table></figure>
 
+<blockquote>
+<p>如上图，如果develement处于激活状态，则此时应用server.address为127.0.0.1；如果production和eu-central同时处于激活态，则应用server.addredd为192.168.1.120；</p>
+<p><strong>注意：</strong>spring.profile中可以包含简单的profile名称，也可以包含一个profile表达式，其允许复杂的profile逻辑（什么是profile，见第25节，参考他人博客显示profile就是springboot对不同的环境或指令读取的不同的配置文件）；</p>
+<p>在java代码中，可通过@profile(“profile-name”)来启用不同profile下配置的不同的配置文件（@profile注解只能组合@Configuration和@compinent注解使用）;</p>
+<p>spring.profile:支持通过！取反否定</p>
+<p><strong>YAML的缺点：</strong>无法使用@PropertySource加载YAML文件，*.properties文件可以</p>
+</blockquote>
+</li>
+<li><p>类型安全的属性配置</p>
+<blockquote>
+<p>即通过@Configuration(prefix=””)来指定需要配置的属性在YAML文件中的属性前缀，此种方式注入属性无需在属性名上使用@Value注解，只需要将变量名于配置文件中相同即可;</p>
+<p><strong>注意：</strong>get/set方法通常是必须的（map只要它们被初始化，就可以只要getter不需要setter，因为它们可以被binder修改）</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="meta">@ConfigurationProperties</span>(prefix = <span class="string">"test"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">YMLTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String time;</span><br><span class="line">    <span class="keyword">private</span> String date;</span><br><span class="line">    <span class="keyword">private</span> String heart;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getTime</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> time;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setTime</span><span class="params">(String time)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.time = time;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getDate</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> date;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setDate</span><span class="params">(String date)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.date = date;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getHeart</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> heart;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setHeart</span><span class="params">(String heart)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.heart = heart;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#application.yml配置文件</span></span><br><span class="line"><span class="attr">test:</span></span><br><span class="line"><span class="attr">    time:</span> <span class="number">20</span><span class="string">:37</span></span><br><span class="line"><span class="attr">    date:</span> <span class="number">2019</span><span class="string">/8/13</span></span><br><span class="line"><span class="attr">    heart:</span> <span class="string">impatient</span></span><br></pre></td></tr></table></figure>
 
+<blockquote>
+<p>关于@EnableConfigurationProperties，暂时未能理解，位置：24.8类型的安全配置</p>
+</blockquote>
+<p><strong>应用第三方配置</strong></p>
+<p>@ConfigurationProperties还可以在公共的@Bean方法上使用，以便于将属性绑定到第三方组件上</p>
+<h5 id="宽松绑定"><a href="#宽松绑定" class="headerlink" title="宽松绑定"></a><strong>宽松绑定</strong></h5><p>即通过@ConfigurationProperties绑定属性时，bean中的属性名与配置文件中的属性名不需要精确匹配，例如可将context-path绑定到contextPath、将PORT绑定到port</p>
+<p>关于宽松绑定，针对属性名firstName,在配置文件中可用如下写法</p>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>first-name</td>
+<td>Kebab短横线命名风格，建议在.properties和.yml文件中使用</td>
+</tr>
+<tr>
+<td>firstName</td>
+<td>驼峰式</td>
+</tr>
+<tr>
+<td>first_name</td>
+<td>下划线表示法，.properties和.yml文件中使用</td>
+</tr>
+<tr>
+<td>FIRSTNAME</td>
+<td>大写风格，使用系统环境变量时推荐使用</td>
+</tr>
+</tbody></table>
+<p>注意：直接的prefix值必须是Kebab风格</p>
+<p>各属性源的的宽松绑定规则</p>
+<table>
+<thead>
+<tr>
+<th>属性源</th>
+<th>简单类型</th>
+<th>列表集合类型</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>properties 文件</td>
+<td>驼峰式、短横线式或下划线式</td>
+<td>标准列表语法使用 <code>[]</code> 或逗号分隔值</td>
+</tr>
+<tr>
+<td>YAML 文件</td>
+<td>驼峰式、短横线式或者下划线式</td>
+<td>标准 YAML 列表语法或者逗号分隔值</td>
+</tr>
+<tr>
+<td>环境变量</td>
+<td>大写并且以下划线作为定界符，<code>_</code> 不能放在属性名之间使用</td>
+<td>数字值两边使用下划线连接，例如 <code>MY_ACME_1_OTHER = my.acme[1].other</code></td>
+</tr>
+<tr>
+<td>系统属性</td>
+<td>驼峰式、短横线式或者下划线式</td>
+<td>标准列表语法使用 <code>[]</code> 或逗号分隔值</td>
+</tr>
+</tbody></table>
+<p>当将属性绑定到Map中时，如果key包含出字符数字以及‘-’以外的其他字符时，需要通过[ ]来保留特殊字符，否则其他字符将被删除</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">test:</span></span><br><span class="line"><span class="attr">    time:</span> <span class="number">20</span><span class="string">:37</span></span><br><span class="line"><span class="attr">    date:</span> <span class="number">2019</span><span class="string">/8/13</span></span><br><span class="line"><span class="attr">    heart:</span> <span class="string">impatient</span></span><br><span class="line"><span class="attr">    map:</span></span><br><span class="line">        <span class="string">"[/key1]"</span><span class="string">:</span> <span class="string">value1</span></span><br><span class="line">        <span class="string">"[key-2]"</span><span class="string">:</span> <span class="string">value2</span></span><br><span class="line">        <span class="string">/key3:</span> <span class="string">value3</span></span><br><span class="line"><span class="attr">        key-4:</span> <span class="string">value4</span></span><br><span class="line">        <span class="string">\key\5:</span> <span class="string">value5</span></span><br></pre></td></tr></table></figure>
 
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="meta">@ConfigurationProperties</span>(prefix = <span class="string">"test"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">YMLTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String time;</span><br><span class="line">    <span class="keyword">private</span> String date;</span><br><span class="line">    <span class="keyword">private</span> String heart;</span><br><span class="line">    <span class="keyword">private</span> Map map;</span><br><span class="line"> 	·····省略get/set方法   </span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/*测试方法中输出为：</span></span><br><span class="line"><span class="comment">/key1=value1</span></span><br><span class="line"><span class="comment">key-2=value2</span></span><br><span class="line"><span class="comment">key3=value3</span></span><br><span class="line"><span class="comment">key-4=value4</span></span><br><span class="line"><span class="comment">key5=value5</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
 
+<p><strong>合并复杂类型</strong></p>
+<p>即如果在配置文件中针对同一属性均做了配置（通过spring.profile指定配置的应用环境），注入时默认不会合并条目（即激活某一配置环境时，默认条目与指定环境下的配置条目不会发生合并）</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#配置文件如下 application.yml</span></span><br><span class="line"><span class="attr">acme:</span></span><br><span class="line"><span class="attr">    list:</span></span><br><span class="line"><span class="attr">      - name:</span> <span class="string">my</span> <span class="string">name</span></span><br><span class="line"><span class="attr">        description:</span> <span class="string">my</span> <span class="string">Description</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line"><span class="attr">  profiles:</span> <span class="string">dev</span></span><br><span class="line"><span class="attr">  acme:</span></span><br><span class="line"><span class="attr">    list:</span></span><br><span class="line"><span class="attr">      - name:</span> <span class="string">my</span> <span class="string">another</span> <span class="string">name</span></span><br></pre></td></tr></table></figure>
+
+<p>在使用默认配置的情况下注入list</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyPojo</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="keyword">private</span> String description;</span><br><span class="line"> 	<span class="comment">//此处······省略get/set</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/*实现类*/</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="meta">@ConfigurationProperties</span>(prefix = <span class="string">"acme"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">YMLTest01</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> List&lt;MyPojo&gt; list;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> List&lt;MyPojo&gt; <span class="title">getList</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> list;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setList</span><span class="params">(List&lt;MyPojo&gt; list)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.list = list;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/*测试类*/</span></span><br><span class="line"><span class="meta">@RunWith</span>(SpringRunner.class)</span><br><span class="line"><span class="meta">@SpringBootTest</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DemoApplicationTests</span></span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">	<span class="keyword">private</span> YMLTest01 ymlTest01;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span> (MyPojo temp:ymlTest01.getList())&#123;</span><br><span class="line">			System.out.println(temp.getName()+<span class="string">" "</span>+temp.getDescription());</span><br><span class="line">		&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/*测试类中输出该list：</span></span><br><span class="line"><span class="comment">my name my Description</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<p>若配置了环境dev，并激活dev</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">acme:</span></span><br><span class="line"><span class="attr">    list:</span>  <span class="comment">#这同样也是yaml中list的写法</span></span><br><span class="line"><span class="attr">      - name:</span> <span class="string">my</span> <span class="string">name</span></span><br><span class="line"><span class="attr">        description:</span> <span class="string">my</span> <span class="string">Description</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line"><span class="attr">  profiles:</span></span><br><span class="line"><span class="attr">    active:</span> <span class="string">dev</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line"><span class="attr">  profiles:</span> <span class="string">dev</span></span><br><span class="line"><span class="attr">acme:</span></span><br><span class="line"><span class="attr">    list:</span></span><br><span class="line"><span class="attr">      - name:</span> <span class="string">my</span> <span class="string">another</span> <span class="string">name</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*bean类与测试类同上，结果输出为：</span></span><br><span class="line"><span class="comment">my another name null</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<p>即默认的配置与新激活的dev环境配置中配置的list并不会合并注入</p>
+<p>综上：多个配置文件中配置同一个list，优先级最高的将被使用</p>
+<p><strong>但是</strong>，对于map，则可以从多个数据源中取得数据并绑定，而对于相同Key的元素，则优先级最高的将被使用：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">acme:</span></span><br><span class="line"><span class="attr">    list:</span></span><br><span class="line"><span class="attr">      - name:</span> <span class="string">my</span> <span class="string">name</span></span><br><span class="line"><span class="attr">        description:</span> <span class="string">my</span> <span class="string">Description</span></span><br><span class="line"><span class="attr">    map:</span></span><br><span class="line"><span class="attr">      key1:</span></span><br><span class="line"><span class="attr">        name:</span> <span class="string">myname1</span></span><br><span class="line"><span class="attr">        description:</span> <span class="string">my</span> <span class="string">description1</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line"><span class="attr">  profiles:</span></span><br><span class="line"><span class="attr">    active:</span> <span class="comment">#dev    激活配置项</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line"><span class="attr">  profiles:</span> <span class="string">dev</span></span><br><span class="line"><span class="attr">acme:</span></span><br><span class="line"><span class="attr">    list:</span></span><br><span class="line"><span class="attr">      - name:</span> <span class="string">my</span> <span class="string">another</span> <span class="string">name</span></span><br><span class="line"><span class="attr">    map:</span></span><br><span class="line"><span class="attr">      key1:</span></span><br><span class="line"><span class="attr">        name:</span> <span class="string">my</span> <span class="string">name1</span></span><br><span class="line"><span class="attr">      key2:</span></span><br><span class="line"><span class="attr">        name:</span> <span class="string">my</span> <span class="string">name2</span></span><br><span class="line"><span class="attr">        description:</span> <span class="string">my</span> <span class="string">description2</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*测试类*/</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="meta">@ConfigurationProperties</span>(prefix = <span class="string">"acme"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">YMLTest02</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Map&lt;String,MyPojo&gt; map;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Map&lt;String, MyPojo&gt; <span class="title">getMap</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> map;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setMap</span><span class="params">(Map&lt;String, MyPojo&gt; map)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.map = map;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RunWith</span>(SpringRunner.class)</span><br><span class="line"><span class="meta">@SpringBootTest</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DemoApplicationTests</span></span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">	<span class="keyword">private</span> YMLTest02 ymlTest02;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span> (String temp:ymlTest02.getMap().keySet())&#123;</span><br><span class="line">			MyPojo myPojo = ymlTest02.getMap().get(temp);</span><br><span class="line">			System.out.println(temp+<span class="string">":"</span>+myPojo.getName()+<span class="string">" "</span>+myPojo.getDescription());</span><br><span class="line">		&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/*当dev未激活时，其输出内容为：</span></span><br><span class="line"><span class="comment">key1 myname1 my description1</span></span><br><span class="line"><span class="comment">当dev激活后，输出为：</span></span><br><span class="line"><span class="comment">key1:my name1 my description1</span></span><br><span class="line"><span class="comment">key2:my name2 my description2  </span></span><br><span class="line"><span class="comment">可见虽然dev被激活，但key1对于的value值仍为默认配置文件中的key1，dev下的key1被覆盖了</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+
+<p>关于属性转换，暂时未能理解，章节24.8.4</p>
+<p><strong>@configurationProperties验证</strong></p>
+<blockquote>
+<p>通过将@validated直接在配置类上使用，并在需要验证的属性上设置约束注解（验证用,例如@NotNull，@NotEmpty，@Valid）</p>
+</blockquote>
+</li>
+<li><p>Profile</p>
+<blockquote>
+<p>spring profile提供了一种配置部分隔离，并在指定环境中可用的方法。可以使用@Profile来注解任何@Component或者@Configuration来指定何时加载它（即将@Profile使用在@Component和@Configuration是用来指定这类配置文件可使用的环境，可见@Component和@Configuration属于配置类！！！），如果将@Profile使用在实现类上，则可以实现获取该实现类时的根据当前环境动态注入相应的实现类;</p>
+</blockquote>
+<p>环境在配置文件中的表现就是：</p>
+<blockquote>
+<p>application.yml：全局配置</p>
+<p>application-dev.yml：生产环境配置</p>
+<p>application-prod.yml：开发环境配置</p>
+<p>application-test.yml：测试环境配置</p>
+</blockquote>
+<p>Profile的激活</p>
+<blockquote>
+<p>可以使用spring.profiles.active=dev····通过application.properties/application.yml来指定激活的配置文件，并通过命令行来替换修改；</p>
+<p>此外，也可以通过Spring.prifiles.include属性无条件的激活配置文件（在指定配置文件中配置该属性，例如在prod中配置Spring.prifiles.include：prodbd，则只有prod被激活，他们均会被激活）；</p>
+<p>还可以在SpringApplication入口处通过SpringApplication.setAddtionalProfiles(···)来设置激活profile</p>
+</blockquote>
+<p>关于特定的profile文件</p>
+<blockquote>
+<p>特定是profile文件，即除application.properties文件外，通过application-{profile}.properties命名规范命名的特定profile属性文件，若没有显示的激活特定profile，将加载application-default.properties配置文件</p>
+<p><strong>注意：</strong>特定的profile和通过@ConfigurationProperties引用的文件被当做文件并加载</p>
+</blockquote>
 </li>
 </ol>
-<ol start="10">
-<li><strong>关于Multi-profile YAML Documents暂未看明白24.7.3</strong></li>
-</ol>
-<p>进度：24.8</p>
 
       
     </div>
@@ -763,7 +896,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#springboot"><span class="nav-number">1.</span> <span class="nav-text">springboot</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#关于第一次搭建"><span class="nav-number">1.0.1.</span> <span class="nav-text">关于第一次搭建</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Springboot特性"><span class="nav-number">1.0.2.</span> <span class="nav-text">Springboot特性</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#springboot"><span class="nav-number">1.</span> <span class="nav-text">springboot</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#关于第一次搭建"><span class="nav-number">1.0.1.</span> <span class="nav-text">关于第一次搭建</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Springboot特性"><span class="nav-number">1.0.2.</span> <span class="nav-text">Springboot特性</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#宽松绑定"><span class="nav-number">1.0.3.</span> <span class="nav-text">宽松绑定</span></a></li></ol></li></ol></div>
             
 
           </div>
